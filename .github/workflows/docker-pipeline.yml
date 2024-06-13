@@ -9,21 +9,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      - name: Login to GitHub
-        run: docker login --username ${{ secrets.GIT_USERNAME }} --password ${{ secrets.GIT_PASSWORD }} ghcr.io
-      
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GIT_PASSWORD }}" | docker login ghcr.io -u "${{ secrets.GIT_USERNAME }}" --password-stdin
+
       - name: Build Main Docker image
-        run: docker build . --tag ghcr.io/${{ secrets.DOCKER_USERNAME }}/docker-modprog:latest
-      
+        run: docker build . --tag ghcr.io/${{ secrets.GIT_USERNAME }}/docker-modprog:latest
+
       - name: Push Main Docker image to GitHub Container Registry
-        run: docker push ghcr.io/${{ secrets.DOCKER_USERNAME }}/docker-modprog:latest
+        run: docker push ghcr.io/${{ secrets.GIT_USERNAME }}/docker-modprog:latest
 
       - name: Build Test Docker image
-        run: docker build -t ghcr.io/${{ secrets.DOCKER_USERNAME }}/docker-modprog:latest -f Dockerfile.test .
+        run: docker build -t ghcr.io/${{ secrets.GIT_USERNAME }}/docker-modprog:test -f Dockerfile.test .
 
       - name: Push Test Docker image to GitHub Container Registry
-        run: docker push ghcr.io/${{ secrets.DOCKER_USERNAME }}/docker-modprog:latest
+        run: docker push ghcr.io/${{ secrets.GIT_USERNAME }}/docker-modprog:test
 
       - name: Run tests in Docker container
-        run: docker run ghcr.io/${{ secrets.DOCKER_USERNAME }}/docker-modprog:latest
+        run: docker run ghcr.io/${{ secrets.GIT_USERNAME }}/docker-modprog:test
